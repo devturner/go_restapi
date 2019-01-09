@@ -1,0 +1,35 @@
+YAML help:
+https://stackoverflow.com/questions/41885442/golang-parse-yaml-file-struct-challenged
+
+Validator:
+https://godoc.org/gopkg.in/validator.v2
+
+find the errors in the creation of a new appl:
+err := validator.Validate(ve)
+if err == nil {
+    fmt.Println("Values are valid.")
+} else {
+    errs := err.(validator.ErrorMap)
+    // See if Address was empty
+    if errs["Address.Street"][0] == validator.ErrZeroValue {
+        fmt.Println("Street cannot be empty.")
+    }
+
+    // Iterate through the list of fields and respective errors
+    fmt.Println("Invalid due to fields:")
+
+    // Here we have to sort the arrays to ensure map ordering does not
+    // fail our example, typically it's ok to just range through the err
+    // list when order is not important.
+    var errOuts []string
+    for f, e := range errs {
+        errOuts = append(errOuts, fmt.Sprintf("\t - %s (%v)\n", f, e))
+    }
+
+    // Again this part is extraneous and you should not need this in real
+    // code.
+    sort.Strings(errOuts)
+    for _, str := range errOuts {
+        fmt.Print(str)
+    }
+}
