@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"regexp"
 	"sort"
 
 	"github.com/gorilla/mux"
@@ -15,19 +17,20 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-var (
-	appl     []Application
-	validate validator.Validate
-)
+var appl []Application
 
 func validEmail(v interface{}, param string) error {
 	st := reflect.ValueOf(v)
 	if st.Kind() != reflect.String {
-		return validate.ErrUnsupported
+		return validator.ErrUnsupported
 	}
-	// if st.String() != regexp.MatchString("^[0-9a-z]+@[0-9a-z]+(\\.[0-9a-z]+)+$") {
-	// 	return errors.New("Enter a valid email address")
-	// }
+	re, err := regexp.Compile("[0-9a-z]+@[0-9a-z]+(\\.[0-9a-z]+)+$")
+	if err != nil {
+		return errors.New("Enter a valid email address")
+	}
+	if !re.MatchString(st.String()) {
+		return errors.New("Enter a valid email address")
+	}
 	return nil
 }
 
@@ -38,7 +41,7 @@ type Application struct {
 	Maintainers []struct {
 		Name  string `validate:"nonzero"`
 		Email string `validate:"nonzero, validEmail"`
-	}
+	} `validate:"nonzero"`
 	// "regexp=^[0-9a-z]+@[0-9a-z]+(\\.[0-9a-z]+)+$"`
 	Company     string `validate:"nonzero"`
 	Website     string `validate:"nonzero"`
@@ -98,7 +101,7 @@ func DeleteApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request)
 }
 
 func main() {
-	validate.SetValidationFunc("validEmail", validEmail)
+	validator.SetValidationFunc("validEmail", validEmail)
 
 	router := mux.NewRouter()
 
