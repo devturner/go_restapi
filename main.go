@@ -132,15 +132,15 @@ func main() {
 
 	// test with workingExample.yaml & brokenExample.yaml
 	var appl1 Application
-	// reader, _ := os.Open("brokenExample.yaml")
-	reader, _ := os.Open("workingExample.yaml")
+	// reader, _ := os.Open("brokenExample1.yaml")
+	reader, _ := os.Open("workingExample1.yaml")
 	buf, _ := ioutil.ReadAll(reader)
 	yaml.Unmarshal(buf, &appl1)
 	if errs := validator.Validate(appl1); errs != nil {
 		fmt.Printf("Field error")
 		return
 	}
-	// if working, add to startup
+	// if valid, add to prject at startup
 	appl = append(appl, appl1)
 
 	// routes for GET all, GET one by ID, POST, GET Search Title, DELETE one by ID
