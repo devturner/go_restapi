@@ -11,14 +11,19 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strings"
 
 	"github.com/gorilla/mux"
 	validator "gopkg.in/validator.v2"
 	yaml "gopkg.in/yaml.v2"
 )
 
-var appl []Application
+var (
+	appl    []Application
+	results []Application
+)
 
+// validEmail validate email address
 func validEmail(v interface{}, param string) error {
 	st := reflect.ValueOf(v)
 	if st.Kind() != reflect.String {
@@ -34,6 +39,7 @@ func validEmail(v interface{}, param string) error {
 	return nil
 }
 
+// Application MetaData record type
 type Application struct {
 	ID          string `validate:"nonzero"`
 	Title       string `validate:"nonzero"`
@@ -42,7 +48,6 @@ type Application struct {
 		Name  string `validate:"nonzero"`
 		Email string `validate:"nonzero, validEmail"`
 	} `validate:"nonzero"`
-	// "regexp=^[0-9a-z]+@[0-9a-z]+(\\.[0-9a-z]+)+$"`
 	Company     string `validate:"nonzero"`
 	Website     string `validate:"nonzero"`
 	Source      string `validate:"nonzero"`
@@ -50,12 +55,7 @@ type Application struct {
 	Description string `validate:"nonzero"`
 }
 
-// todo: Had to ad ID to YAML file, but that might not be needed if I
-// can come up with a better way to search what was provided.
-// This might help:
-// https://stackoverflow.com/questions/38654383/how-to-search-for-an-element-in-a-golang-slice
-// https://github.com/lithammer/fuzzysearch
-
+// GetApplicationMetadataEndpoint Search by ID for record
 func GetApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	for _, item := range appl {
@@ -67,12 +67,28 @@ func GetApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	yaml.NewEncoder(w).Encode(&Application{})
 }
 
+// SearchApplicationMetadataEndpoint Search application titles
+func SearchApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
+	for _, item := range appl {
+		if strings.Contains(item.Title, params["key"]) {
+			results = append(results, item)
+		} else {
+			io.WriteString(w, "No results for that key")
+		}
+	}
+	yaml.NewEncoder(w).Encode(results)
+	results = results[:0]
+}
+
+// GetApplicationsMetadataEndpoint Return all entries
 func GetApplicationsMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	yaml.NewEncoder(w).Encode(appl)
 }
 
-// todo: error handling
+// CreateApplicationMetadataEndpoint Create a new application record
 func CreateApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
+
 	params := mux.Vars(req)
 	var newAppl Application
 	_ = yaml.NewDecoder(req.Body).Decode(&newAppl)
@@ -89,23 +105,34 @@ func CreateApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request)
 			errOuts = append(errOuts, fmt.Sprintf("\t - %s (%v)\n", f, e))
 		}
 		sort.Strings(errOuts)
-		http.Error(w, "Invalid due to fields:", http.StatusForbidden)
+		http.Error(w, "Invalid due to field(s):", http.StatusForbidden)
 		for _, str := range errOuts {
 			io.WriteString(w, str)
 		}
 	}
 }
 
+// DeleteApplicationMetadataEndpoint Delete a record
 func DeleteApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
-
+	params := mux.Vars(req)
+	for index, item := range appl {
+		if item.ID == params["id"] {
+			appl = append(appl[:index], appl[index+1:]...)
+			break
+		}
+	}
+	yaml.NewEncoder(w).Encode(appl)
 }
 
 func main() {
+	// register custom validation
 	validator.SetValidationFunc("validEmail", validEmail)
 
 	router := mux.NewRouter()
 
+	// test with workingExample.yaml & brokenExample.yaml
 	var appl1 Application
+	// reader, _ := os.Open("brokenExample.yaml")
 	reader, _ := os.Open("workingExample.yaml")
 	buf, _ := ioutil.ReadAll(reader)
 	yaml.Unmarshal(buf, &appl1)
@@ -113,12 +140,15 @@ func main() {
 		fmt.Printf("Field error")
 		return
 	}
-
+	// if working, add to startup
 	appl = append(appl, appl1)
 
+	// routes for GET all, GET one by ID, POST, GET Search Title, DELETE one by ID
 	router.HandleFunc("/applications", GetApplicationsMetadataEndpoint).Methods("GET")
 	router.HandleFunc("/applications/{id}", GetApplicationMetadataEndpoint).Methods("GET")
+	router.HandleFunc("/search/{key}", SearchApplicationMetadataEndpoint).Methods("GET")
 	router.HandleFunc("/applications/{id}", CreateApplicationMetadataEndpoint).Methods("POST")
-	router.HandleFunc("/applications", GetApplicationsMetadataEndpoint).Methods("DELETE")
+	router.HandleFunc("/applications/{id}", DeleteApplicationMetadataEndpoint).Methods("DELETE")
+
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
