@@ -44,14 +44,6 @@ func GetApplicationsMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	yaml.NewEncoder(w).Encode(appl)
 }
 
-// type T struct {
-// 	A string  `validate:"nonzero,notzz"`
-// }
-// t := T{"ZZ"}
-// if errs := validator.Validate(t); errs != nil {
-// 	fmt.Printf("Field A error: %s\n", errs["A"][0])
-// }
-
 func CreateApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	var newAppl Application
@@ -59,7 +51,6 @@ func CreateApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request)
 	newAppl.ID = params["id"]
 
 	if errs := validator.Validate(newAppl); errs != nil {
-		fmt.Printf(errs[])
 		http.Error(w, "Field error", http.StatusForbidden)
 		return
 	}
