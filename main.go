@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -9,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"regexp"
 	"sort"
 
 	"github.com/gorilla/mux"
@@ -17,18 +15,21 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+var (
+	appl     []Application
+	validate validator.Validate
+)
+
 func validEmail(v interface{}, param string) error {
 	st := reflect.ValueOf(v)
 	if st.Kind() != reflect.String {
 		return validate.ErrUnsupported
 	}
-	if st.String() != regexp.MatchString("^[0-9a-z]+@[0-9a-z]+(\\.[0-9a-z]+)+$") {
-		return errors.New("Enter a valid email address")
-	}
+	// if st.String() != regexp.MatchString("^[0-9a-z]+@[0-9a-z]+(\\.[0-9a-z]+)+$") {
+	// 	return errors.New("Enter a valid email address")
+	// }
 	return nil
 }
-
-validate.SetValidationFunc("validEmail", validEmail)
 
 type Application struct {
 	ID          string `validate:"nonzero"`
@@ -45,8 +46,6 @@ type Application struct {
 	License     string `validate:"nonzero"`
 	Description string `validate:"nonzero"`
 }
-
-var appl []Application
 
 // todo: Had to ad ID to YAML file, but that might not be needed if I
 // can come up with a better way to search what was provided.
@@ -99,7 +98,7 @@ func DeleteApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request)
 }
 
 func main() {
-	
+	validate.SetValidationFunc("validEmail", validEmail)
 
 	router := mux.NewRouter()
 

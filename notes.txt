@@ -5,6 +5,7 @@ http://ghodss.com/2014/the-right-way-to-handle-yaml-in-golang/
 
 Validator:
 https://godoc.org/gopkg.in/validator.v2
+https://github.com/go-playground/validator/issues/240
 
 find the errors in the creation of a new appl:
 err := validator.Validate(ve)
