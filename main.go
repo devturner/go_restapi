@@ -31,7 +31,8 @@ var appl []Application
 
 // todo: Had to ad ID to YAML file, but that might not be needed if I
 // can come up with a better way to search what was provided.
-// Need to think about it.
+// This might help:
+// https://stackoverflow.com/questions/38654383/how-to-search-for-an-element-in-a-golang-slice
 
 func GetApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
