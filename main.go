@@ -29,6 +29,10 @@ type Application struct {
 
 var appl []Application
 
+// todo: Had to ad ID to YAML file, but that might not be needed if I
+// can come up with a better way to search what was provided.
+// Need to think about it.
+
 func GetApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	for _, item := range appl {
@@ -44,6 +48,7 @@ func GetApplicationsMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	yaml.NewEncoder(w).Encode(appl)
 }
 
+// todo: error handling
 func CreateApplicationMetadataEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	var newAppl Application
