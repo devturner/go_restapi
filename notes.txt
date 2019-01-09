@@ -1,5 +1,7 @@
 YAML help:
 https://stackoverflow.com/questions/41885442/golang-parse-yaml-file-struct-challenged
+http://ghodss.com/2014/the-right-way-to-handle-yaml-in-golang/
+
 
 Validator:
 https://godoc.org/gopkg.in/validator.v2
