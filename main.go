@@ -147,8 +147,8 @@ func main() {
 	router.HandleFunc("/applications", GetApplicationsMetadataEndpoint).Methods("GET")
 	router.HandleFunc("/applications/{id}", GetApplicationMetadataEndpoint).Methods("GET")
 	router.HandleFunc("/search/{key}", SearchApplicationMetadataEndpoint).Methods("GET")
-	router.HandleFunc("/applications/{id}", CreateApplicationMetadataEndpoint).Methods("POST")
-	router.HandleFunc("/applications/{id}", DeleteApplicationMetadataEndpoint).Methods("DELETE")
+	router.HandleFunc("/new/{id}", CreateApplicationMetadataEndpoint).Methods("POST")
+	router.HandleFunc("/delete/{id}", DeleteApplicationMetadataEndpoint).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
