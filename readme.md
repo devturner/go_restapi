@@ -34,8 +34,15 @@ Using Postman, verify the API is working at endpoints:
     - GET localhost:8000/search/{key}
     - POST localhost:8000/new/{id} 
     - DELETE localhost:8000/delete/{id}
+    
+Example payloads:
+https://github.com/devturner/go_restapi/blob/master/workingExample1.yaml
+https://github.com/devturner/go_restapi/blob/master/workingExample2.yaml
+https://github.com/devturner/go_restapi/blob/master/brokenExample1.yaml
+https://github.com/devturner/go_restapi/blob/master/brokenExample2.yaml
+
 
 ## Dependencies: 
  - gorilla/mux: https://github.com/gorilla/mux
- - validator:  github.com/go-validator/validator/tree/v2
+ - validator:  https://github.com/go-validator/validator/tree/v2
  - YAML: https://github.com/go-yaml/yaml/tree/v2.2.2
