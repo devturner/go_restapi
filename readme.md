@@ -35,7 +35,7 @@ Using Postman, verify the API is working at endpoints:
     - POST localhost:8000/new/{id} 
     - DELETE localhost:8000/delete/{id}
 
-## Dependancies: 
+## Dependencies: 
  - gorilla/mux: https://github.com/gorilla/mux
  - validator:  github.com/go-validator/validator/tree/v2
  - YAML: https://github.com/go-yaml/yaml/tree/v2.2.2
