@@ -20,11 +20,6 @@ Golang RESTful API server for application metadata compatible with valid YAML da
     - /delete/{id}
     Delete an application 
 
-## Dependancies: 
- - gorilla/mux: https://github.com/gorilla/mux
- - validator:  github.com/go-validator/validator/tree/v2
- - YAML: https://github.com/go-yaml/yaml/tree/v2.2.2
-
  ## Getting Started:
  Clone this repo
 
@@ -39,3 +34,8 @@ Using Postman, verify the API is working at endpoints:
     - GET localhost:8000/search/{key}
     - POST localhost:8000/new/{id} 
     - DELETE localhost:8000/delete/{id}
+
+## Dependancies: 
+ - gorilla/mux: https://github.com/gorilla/mux
+ - validator:  github.com/go-validator/validator/tree/v2
+ - YAML: https://github.com/go-yaml/yaml/tree/v2.2.2
